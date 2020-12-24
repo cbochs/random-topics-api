@@ -50,6 +50,7 @@ github.com/leodido/go-urn
 # github.com/mattn/go-isatty v0.0.12
 github.com/mattn/go-isatty
 # github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421
+## explicit
 github.com/modern-go/concurrent
 # github.com/modern-go/reflect2 v0.0.0-20180701023420-4b7aa43c6742
 github.com/modern-go/reflect2
@@ -60,6 +61,7 @@ golang.org/x/crypto/pbkdf2
 # golang.org/x/sys v0.0.0-20200223170610-d5e6a3e2c0ae
 golang.org/x/sys/unix
 # golang.org/x/text v0.3.3
+## explicit
 golang.org/x/text/cases
 golang.org/x/text/internal
 golang.org/x/text/internal/language
