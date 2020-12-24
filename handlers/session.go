@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/cbochs/random-topics-api/src/models"
-	"github.com/cbochs/random-topics-api/src/random"
+	"github.com/cbochs/random-topics-api/models"
+	"github.com/cbochs/random-topics-api/random"
 	"gorm.io/gorm"
 
 	"github.com/gin-gonic/gin"

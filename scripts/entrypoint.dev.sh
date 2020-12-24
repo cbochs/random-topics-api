@@ -4,4 +4,4 @@ set -e
 
 GO111MODULE=off go get github.com/githubnemo/CompileDaemon
 
-CompileDaemon --build="go build -o main src/main.go" --command=./main
+CompileDaemon --build="go build -o main main.go" --command=./main
