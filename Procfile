@@ -1,1 +1,1 @@
-web: bin/random-topics
+web: bin/random-topics-api
