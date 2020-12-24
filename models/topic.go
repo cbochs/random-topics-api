@@ -10,14 +10,19 @@ type Topic struct {
 	Session   Session `gorm:"foreignKey:SessionID"`
 }
 
-// TopicInput ... Code will be either a session code (submission) or
-// topic code (updating)
-type TopicInput struct {
+// SubmitTopicInput ...
+type SubmitTopicInput struct {
 	Code  string `json:"code" binding:"required"`
 	Topic string `json:"topic" binding:"required"`
 }
 
-type TopicResult struct {
+// UpdateTopicInput ...
+type UpdateTopicInput struct {
+	Topic string `json:"topic" binding:"required"`
+}
+
+// GetTopicResult ...
+type GetTopicResult struct {
 	Code        string `json:"code"`
 	SessionCode string `json:"session_code"`
 	Topic       string `json:"topic"`
