@@ -1,4 +1,4 @@
-module github.com/cbochs/random-topics
+module github.com/cbochs/random-topics-api
 
 go 1.15
 

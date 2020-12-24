@@ -4,9 +4,9 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/cbochs/random-topics/src/config"
-	"github.com/cbochs/random-topics/src/handlers"
-	"github.com/cbochs/random-topics/src/models"
+	"github.com/cbochs/random-topics-api/src/config"
+	"github.com/cbochs/random-topics-api/src/handlers"
+	"github.com/cbochs/random-topics-api/src/models"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
