@@ -20,9 +20,16 @@ func SubmitTopic(c *gin.Context) {
 	}
 
 	var session models.Session
-	if err := models.DB.Where("code = ?", input.Code).First(&session).Error; err != nil {
+	if err := models.DB.Where("code = ?", strings.ToUpper(input.Code)).First(&session).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusOK, gin.H{"data": models.TopicResult{
+				Code:        "",
+				SessionCode: strings.ToUpper(input.Code),
+				Topic:       strings.ToLower(input.Topic),
+				Type:        "submitted",
+				OK:          false,
+				Reason:      "Session does not exist.",
+			}})
 		} else {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		}
@@ -30,7 +37,14 @@ func SubmitTopic(c *gin.Context) {
 	}
 
 	if session.Status == "closed" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Session is closed"})
+		c.JSON(http.StatusOK, gin.H{"data": models.TopicResult{
+			Code:        "",
+			SessionCode: session.Code,
+			Topic:       strings.ToLower(input.Topic),
+			Type:        "submitted",
+			OK:          false,
+			Reason:      "Session is closed.",
+		}})
 		return
 	}
 
@@ -44,7 +58,14 @@ func SubmitTopic(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": topic})
+	c.JSON(http.StatusOK, gin.H{"data": models.TopicResult{
+		Code:        topic.Code,
+		SessionCode: session.Code,
+		Topic:       strings.ToLower(input.Topic),
+		Type:        "submitted",
+		OK:          true,
+		Reason:      "",
+	}})
 }
 
 // UpdateTopic (PUT /topics/:code) Update a topic in an open session
@@ -58,7 +79,14 @@ func UpdateTopic(c *gin.Context) {
 	var topic models.Topic
 	if err := models.DB.Where("code = ?", c.Param("code")).First(&topic).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusOK, gin.H{"data": models.TopicResult{
+				Code:        strings.ToUpper(c.Param("code")),
+				SessionCode: "",
+				Topic:       strings.ToLower(input.Topic),
+				Type:        "updated",
+				OK:          false,
+				Reason:      "Topic code does not exist.",
+			}})
 		} else {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		}
@@ -67,20 +95,16 @@ func UpdateTopic(c *gin.Context) {
 
 	var session models.Session
 	if err := models.DB.Where("id = ?", topic.SessionID).First(&session).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	if session.Status == "closed" {
-		c.JSON(http.StatusOK, gin.H{"data": models.GetTopicResult{
+		c.JSON(http.StatusOK, gin.H{"data": models.TopicResult{
 			Code:        topic.Code,
 			SessionCode: session.Code,
 			Topic:       topic.Submitted,
-			Type:        "submitted",
+			Type:        "updated",
 			OK:          false,
 			Reason:      "Session is closed.",
 		}})
@@ -97,11 +121,11 @@ func UpdateTopic(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": models.GetTopicResult{
+	c.JSON(http.StatusOK, gin.H{"data": models.TopicResult{
 		Code:        topic.Code,
 		SessionCode: session.Code,
 		Topic:       topic.Submitted,
-		Type:        "submitted",
+		Type:        "updated",
 		OK:          true,
 		Reason:      "",
 	}})
@@ -129,7 +153,7 @@ func GetSubmittedTopic(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": models.GetTopicResult{
+	c.JSON(http.StatusOK, gin.H{"data": models.TopicResult{
 		Code:        topic.Code,
 		SessionCode: session.Code,
 		Topic:       topic.Submitted,
@@ -142,9 +166,16 @@ func GetSubmittedTopic(c *gin.Context) {
 // GetAssignedTopic (GET /topic/:code/assigned) Get a users' assigned topic
 func GetAssignedTopic(c *gin.Context) {
 	var topic models.Topic
-	if err := models.DB.Where("code = ?", c.Param("code")).First(&topic).Error; err != nil {
+	if err := models.DB.Where("code = ?", strings.ToUpper(c.Param("code"))).First(&topic).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusOK, gin.H{"data": models.TopicResult{
+				Code:        strings.ToUpper(c.Param("code")),
+				SessionCode: "",
+				Topic:       "",
+				Type:        "assigned",
+				OK:          false,
+				Reason:      "Topic code not found.",
+			}})
 		} else {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		}
@@ -162,7 +193,7 @@ func GetAssignedTopic(c *gin.Context) {
 	}
 
 	if session.Status == "open" {
-		c.JSON(http.StatusOK, gin.H{"data": models.GetTopicResult{
+		c.JSON(http.StatusOK, gin.H{"data": models.TopicResult{
 			Code:        topic.Code,
 			SessionCode: session.Code,
 			Topic:       "",
@@ -172,7 +203,7 @@ func GetAssignedTopic(c *gin.Context) {
 		}})
 		return
 	} else if session.Status == "closed" && topic.Assigned == "" {
-		c.JSON(http.StatusOK, gin.H{"data": models.GetTopicResult{
+		c.JSON(http.StatusOK, gin.H{"data": models.TopicResult{
 			Code:        topic.Code,
 			SessionCode: session.Code,
 			Topic:       "",
@@ -183,7 +214,7 @@ func GetAssignedTopic(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": models.GetTopicResult{
+	c.JSON(http.StatusOK, gin.H{"data": models.TopicResult{
 		Code:        topic.Code,
 		SessionCode: session.Code,
 		Topic:       topic.Assigned,

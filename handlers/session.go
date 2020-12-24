@@ -69,7 +69,7 @@ func CloseSession(c *gin.Context) {
 			Code:   strings.ToUpper(input.Code),
 			Status: "closed",
 			OK:     false,
-			Reason: "", // already closed or could not find
+			Reason: "Already closed or does not exist.", // already closed or could not find
 		}})
 		return
 	}
@@ -79,7 +79,7 @@ func CloseSession(c *gin.Context) {
 			Code:   strings.ToUpper(input.Code),
 			Status: "closed",
 			OK:     false,
-			Reason: "No enough participants.",
+			Reason: "Not enough participants.",
 		}})
 		return
 	}

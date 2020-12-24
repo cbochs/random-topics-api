@@ -21,8 +21,8 @@ type UpdateTopicInput struct {
 	Topic string `json:"topic" binding:"required"`
 }
 
-// GetTopicResult ...
-type GetTopicResult struct {
+// TopicResult ...
+type TopicResult struct {
 	Code        string `json:"code"`
 	SessionCode string `json:"session_code"`
 	Topic       string `json:"topic"`
