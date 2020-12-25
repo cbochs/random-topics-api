@@ -30,7 +30,7 @@ func OpenSession(c *gin.Context) {
 // GetSession (GET /sessions/:code) Gets a session's information
 func GetSession(c *gin.Context) {
 	var session models.Session
-	if err := models.DB.Where("code = ?", c.Param("code")).First(&session).Error; err != nil {
+	if err := models.DB.Where("code = ?", strings.ToUpper(c.Param("code"))).First(&session).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		} else {
@@ -122,4 +122,26 @@ func shuffleTopics(code string) error {
 	}
 
 	return nil
+}
+
+// GetSessionTopics (GET /sessions/:code/topics) Get all topics associated with
+// a session
+func GetSessionTopics(c *gin.Context) {
+	var session models.Session
+	if err := models.DB.Where("code = ?", strings.ToUpper(c.Param("code"))).First(&session).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+		return
+	}
+
+	topics := []models.Topic{}
+	if err := models.DB.Where("session_id = ?", session.ID).Find(&topics).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": topics})
 }

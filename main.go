@@ -21,8 +21,9 @@ func main() {
 	r.Use(cors.Default())
 
 	r.POST("/sessions/open", handlers.OpenSession)
-	r.GET("/sessions/:code", handlers.GetSession)
 	r.PUT("/sessions/close", handlers.CloseSession)
+	r.GET("/sessions/:code", handlers.GetSession)
+	r.GET("/sessions/:code/topics", handlers.GetSessionTopics)
 	r.POST("/topics", handlers.SubmitTopic)
 	r.PUT("/topics/:code", handlers.UpdateTopic)
 	r.GET("/topics/:code/submitted", handlers.GetSubmittedTopic)
